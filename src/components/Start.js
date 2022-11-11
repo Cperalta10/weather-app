@@ -18,11 +18,10 @@ const Start = ({
 
   const zip = {
     method: "GET",
-    url: "http://api.geonames.org/postalCodeSearchJSON?",
+    url: "https://api.openweathermap.org/geo/1.0/zip?",
     params: {
-      countryCode: "US",
-      postalcode: zipcode,
-      username: "maclo",
+      zip: `${zipcode},US`,
+      appid: "e75c0d9fe84f151efabdff4ee6764a79",
     },
   };
   const blockInvalidChar = (e) =>
@@ -47,40 +46,35 @@ const Start = ({
     axios
       .request(zip)
       .then(function (response) {
-        if (response.data.postalCodes.length === 0) {
-          setError(`City isn't in our data or isn't in the US.`);
-        } else {
-          setLocation([
-            response.data.postalCodes[0].placeName,
-            response.data.postalCodes[0].adminName1,
-          ]);
-          const options = {
-            method: "GET",
-            url: "https://api.ambeedata.com/weather/forecast/by-lat-lng",
-            params: {
-              lat: response.data.postalCodes[0].lat,
-              lng: response.data.postalCodes[0].lng,
-            },
-            headers: {
-              "x-api-key":
-                "84f61fe334f88d8d7309b1e2f95b658e298b082cb8a5022096786948612fad30",
-              "Content-type": "application/json",
-            },
-          };
+        setLocation([response.data.name, response.data.country]);
+        const options = {
+          method: "GET",
+          url: "https://api.ambeedata.com/weather/forecast/by-lat-lng",
+          params: {
+            lat: response.data.lat,
+            lng: response.data.lon,
+          },
+          headers: {
+            "x-api-key":
+              "84f61fe334f88d8d7309b1e2f95b658e298b082cb8a5022096786948612fad30",
+            "Content-type": "application/json",
+          },
+        };
 
-          axios
-            .request(options)
-            .then(function (res) {
-              setWeather(res.data.data.forecast);
+        axios
+          .request(options)
+          .then(function (res) {
+            setWeather(res.data.data.forecast);
 
-              navigate(`/location/${zipcode}`);
-            })
-            .catch(function (error) {
-              console.error(error);
-            });
-        }
+            navigate(`/location/${zipcode}`);
+          })
+          .catch(function (error) {
+            console.error(error);
+          });
+        // }
       })
       .catch(function (error) {
+        setError(`City isn't in the database or in the US.`);
         console.error(error);
       });
   };
