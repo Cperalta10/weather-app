@@ -1,23 +1,48 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from "react";
+import { Routes, Route } from "react-router-dom";
+
+import "./App.css";
+
+import Start from "./components/Start";
+import Location from "./components/Location";
 
 function App() {
+  const [zipcode, setZipcode] = useState("");
+  const [weather, setWeather] = useState([]);
+  const [location, setLocation] = useState(null);
+  const [error, setError] = useState("");
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <Start
+              zipcode={zipcode}
+              setZipcode={setZipcode}
+              weather={weather}
+              setWeather={setWeather}
+              location={location}
+              setLocation={setLocation}
+              error={error}
+              setError={setError}
+            />
+          }
+        />
+        <Route
+          path={`/location/${zipcode}`}
+          element={
+            <Location
+              weather={weather}
+              location={location}
+              setLocation={setLocation}
+              setWeather={setWeather}
+              setZipcode={setZipcode}
+            />
+          }
+        />
+      </Routes>
     </div>
   );
 }
